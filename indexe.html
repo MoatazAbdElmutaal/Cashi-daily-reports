@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مساعد تقرير الدبة - محمد خالد</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #22c55e;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0; padding: 15px;
+        }
+
+        .container { max-width: 500px; margin: 0 auto; }
+        
+        .header {
+            text-align: center;
+            background: var(--card);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .controls {
+            display: flex; gap: 10px; margin-bottom: 15px;
+        }
+
+        button {
+            flex: 1; padding: 12px; border: none; border-radius: 10px;
+            font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+
+        .btn-copy { background: var(--primary); color: white; }
+        .btn-filter { background: #64748b; color: white; }
+        .btn-reset { background: #ef4444; color: white; flex: 0.4; }
+
+        .point-item {
+            display: flex; align-items: center;
+            background: var(--card);
+            padding: 15px; border-radius: 12px;
+            margin-bottom: 8px; border: 1px solid #e2e8f0;
+        }
+
+        .point-item.visited { border-right: 5px solid var(--success); opacity: 0.8; }
+        
+        .visited-mark { color: var(--success); margin-right: auto; font-weight: bold; display: none; }
+        .visited .visited-mark { display: block; }
+
+        input[type="checkbox"] { width: 22px; height: 22px; margin-left: 12px; }
+        
+        .info strong { display: block; font-size: 1.1em; }
+        .info span { font-size: 0.85em; color: #64748b; }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2 style="margin:0; color:var(--primary)">تقرير منطقة الدبة</h2>
+        <p style="margin:5px 0 0; font-size:0.9em">المندوب: محمد خالد</p>
+    </div>
+
+    <div class="controls">
+        <button class="btn-filter" onclick="toggleFilter()" id="filterBtn">عرض غير المزارة فقط</button>
+        <button class="btn-reset" onclick="resetHistory()">تصفير</button>
+    </div>
+
+    <div id="list"></div>
+
+    <button class="btn-copy" onclick="generateReport()" style="width:100%; margin-top:15px; font-size:1.2em">نسخ التكرير وحفظ الزيارات</button>
+</div>
+
+<script>
+    const myPoints = [
+        { id: 1, name: "نقطة الأمل", phone: "0123456789", account: "ACC-1001" },
+        { id: 2, name: "سوبر ماركت البركة", phone: "0987654321", account: "ACC-1002" },
+        { id: 3, name: "محل السلام", phone: "0112233445", account: "ACC-1003" },
+        { id: 4, name: "مكتبة النور", phone: "0556677889", account: "ACC-1004" }
+    ];
+
+    let showOnlyUnvisited = false;
+
+    function render() {
+        const list = document.getElementById('list');
+        list.innerHTML = '';
+        const visitedIds = JSON.parse(localStorage.getItem('visitedPoints') || '[]');
+
+        myPoints.forEach(p => {
+            const isVisited = visitedIds.includes(p.id);
+            if (showOnlyUnvisited && isVisited) return;
+
+            const div = document.createElement('div');
+            div.className = `point-item ${isVisited ? 'visited' : ''}`;
+            div.innerHTML = `
+                <input type="checkbox" id="check${p.id}" data-id="${p.id}">
+                <label class="info" for="check${p.id}">
+                    <strong>${p.name}</strong>
+                    <span>${p.phone} | ${p.account}</span>
+                </label>
+                <span class="visited-mark">تمت ✅</span>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    function generateReport() {
+        const selected = document.querySelectorAll('input[type="checkbox"]:checked');
+        if (selected.length === 0) return alert("حدد نقاط أولاً");
+
+        let visitedIds = JSON.parse(localStorage.getItem('visitedPoints') || '[]');
+        let text = `التقرير اليومي | ${new Date().toLocaleDateString('ar-EG')}\nالمندوب: محمد خالد | المنطقة: الدبة\n--------------------------\n`;
+
+        selected.forEach(cb => {
+            const id = parseInt(cb.dataset.id);
+            const p = myPoints.find(item => item.id === id);
+            text += `اسم النقطة: ${p.name}\nالهاتف: ${p.phone}\nالحساب: ${p.account}\n--------------------------\n`;
+            if (!visitedIds.includes(id)) visitedIds.push(id);
+        });
+
+        localStorage.setItem('visitedPoints', JSON.stringify(visitedIds));
+        
+        const copyTool = document.createElement("textarea");
+        copyTool.value = text; document.body.appendChild(copyTool);
+        copyTool.select(); document.execCommand('copy');
+        document.body.removeChild(copyTool);
+
+        alert("تم النسخ وحفظ الزيارات بنجاح!");
+        render();
+    }
+
+    function toggleFilter() {
+        showOnlyUnvisited = !showOnlyUnvisited;
+        document.getElementById('filterBtn').innerText = showOnlyUnvisited ? "عرض الكل" : "عرض غير المزارة فقط";
+        render();
+    }
+
+    function resetHistory() {
+        if(confirm("هل تريد تصفير سجل الزيارات والبدء من جديد؟")) {
+            localStorage.removeItem('visitedPoints');
+            render();
+        }
+    }
+
+    render();
+</script>
+</body>
+</html>
+          

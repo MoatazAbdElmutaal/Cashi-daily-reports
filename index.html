@@ -120,7 +120,7 @@
         if (selected.length === 0) return alert("حدد نقاط أولاً");
 
         let visitedIds = JSON.parse(localStorage.getItem('visitedPoints') || '[]');
-        let text = `التقرير اليومي | ${new Date().toLocaleDateString('ar-EG')}\nالمندوب: محمد خالد | المنطقة: الدبة\n--------------------------\n`;
+        let text = `التقرير اليومي | ${new Date().toLocaleDateString('ar-EG', {weekday: 'long'})} ${new Date().toLocaleDateString('en-GB')}\nالمندوب: محمد خالد | المنطقة: الدبة\n--------------------------\n`;
 
         selected.forEach(cb => {
             const id = parseInt(cb.dataset.id);

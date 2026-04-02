@@ -8,16 +8,22 @@
     <meta name="theme-color" content="#2563eb">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
-        :root { --primary: #2563eb; --danger: #ef4444; --bg: #f1f5f9; --card: #ffffff; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 15px; padding-bottom: 120px; }
-        .header { background: var(--card); padding: 15px; border-radius: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        :root { --primary: #2563eb; --danger: #ef4444; --bg: #f1f5f9; --card: #ffffff; --success: #22c55e; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 15px; padding-bottom: 130px; }
+        .header { background: var(--card); padding: 15px; border-radius: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 10px; }
         
+        .stats-badge { background: var(--primary); color: white; padding: 2px 10px; border-radius: 20px; font-size: 0.8em; margin-top: 5px; display: inline-block; }
+
         .user-section { background: #dbeafe; padding: 10px; border-radius: 10px; margin-bottom: 10px; display: flex; gap: 5px; }
-        .user-section input { flex: 1; padding: 8px; border: 1px solid #bfdbfe; border-radius: 5px; }
+        .user-section input { flex: 1; padding: 8px; border: 1px solid #bfdbfe; border-radius: 5px; font-size: 0.9em; }
 
         .add-section { background: #e2e8f0; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
         .add-section input { width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; }
-        .btn-add { background: var(--primary); color: white; width: 100%; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-add { background: var(--primary); color: white; width: 100%; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+
+        .controls { display: flex; gap: 8px; margin-bottom: 10px; }
+        .btn-filter { flex: 2; padding: 10px; border: none; border-radius: 8px; background: #64748b; color: white; font-weight: bold; cursor: pointer; }
+        .btn-filter.active { background: var(--success); }
 
         .search-box { width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 10px; margin-bottom: 10px; box-sizing: border-box; }
 
@@ -25,90 +31,102 @@
             display: flex; align-items: center; background: var(--card); 
             padding: 12px; border-radius: 10px; margin-bottom: 8px; border-right: 5px solid #cbd5e1;
         }
-        .point-item.visited { border-right-color: #22c55e; opacity: 0.6; }
+        .point-item.visited { border-right-color: var(--success); opacity: 0.6; }
         .info { flex-grow: 1; margin-right: 10px; }
-        .info strong { display: block; }
-        .info span { font-size: 0.8em; color: #64748b; }
+        .info strong { display: block; font-size: 1.1em; }
+        .info span { font-size: 0.85em; color: #64748b; display: block; }
 
-        .btn-delete { background: none; border: none; color: var(--danger); font-size: 1.2em; cursor: pointer; }
+        .btn-delete { background: none; border: none; color: var(--danger); font-size: 1.3em; cursor: pointer; padding: 5px; }
 
         .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 100; }
-        .btn-copy { background: var(--primary); color: white; width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 1.1em; cursor: pointer; }
+        .btn-copy { background: var(--primary); color: white; width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 1.1em; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h3 id="displayTitle" style="margin:0">مساعد التقارير الذكي</h3>
-    <p style="margin:5px 0 0; font-size:0.8em; color:var(--primary)">بواسطة المطور معتز</p>
+    <h3 style="margin:0">مساعد التقارير الذكي</h3>
+    <div id="stats" class="stats-badge">جاري التحميل...</div>
 </div>
 
 <div class="user-section">
-    <input type="text" id="userName" placeholder="اكتب اسمك هنا (للمندوب)..." oninput="saveUserName()">
+    <input type="text" id="userName" placeholder="اسم المندوب..." oninput="saveUserName()">
 </div>
 
 <div class="add-section">
-    <input type="text" id="newName" placeholder="اسم المحل الجديد...">
-    <input type="number" id="newAcc" placeholder="رقم الحساب...">
+    <input type="text" id="newName" placeholder="اسم المحل (إجباري)...">
+    <input type="number" id="newAcc" placeholder="رقم الحساب (إجباري)...">
+    <input type="number" id="newPhone" placeholder="رقم الهاتف (اختياري)...">
     <button class="btn-add" onclick="addNewPoint()">+ إضافة النقطة للقائمة</button>
 </div>
 
-<input type="text" id="searchInput" class="search-box" placeholder="بحث في النقاط..." oninput="render()">
+<div class="controls">
+    <button id="filterBtn" class="btn-filter" onclick="toggleFilter()">عرض غير المزارة فقط</button>
+</div>
+
+<input type="text" id="searchInput" class="search-box" placeholder="بحث بالاسم، الحساب، أو الهاتف..." oninput="render()">
 
 <div id="list"></div>
 
 <div class="footer">
     <button class="btn-copy" onclick="generateReport()">نسخ التقرير وحفظ الزيارات ✅</button>
-    <button onclick="resetDaily()" style="width:100%; margin-top:5px; background:none; border:none; color:gray; font-size:0.7em">تصفير زيارات اليوم فقط</button>
+    <button onclick="resetDaily()" style="width:100%; margin-top:8px; background:none; border:none; color:#94a3b8; font-size:0.8em; cursor:pointer">تصفير زيارات اليوم فقط</button>
 </div>
 
 <script>
     let myPoints = JSON.parse(localStorage.getItem('savedPoints') || '[]');
     let visitedIds = JSON.parse(localStorage.getItem('visitedPoints') || '[]');
+    let showOnlyUnvisited = false;
     
-    // تحميل اسم المندوب عند الفتح
     document.getElementById('userName').value = localStorage.getItem('appUserName') || '';
 
     function saveUserName() {
-        const name = document.getElementById('userName').value;
-        localStorage.setItem('appUserName', name);
+        localStorage.setItem('appUserName', document.getElementById('userName').value);
     }
 
     function addNewPoint() {
         const name = document.getElementById('newName').value;
         const acc = document.getElementById('newAcc').value;
+        const phone = document.getElementById('newPhone').value || "غير مسجل";
+        
         if (!name || !acc) {
-            Swal.fire({ icon: 'warning', title: 'عفواً', text: 'الرجاء إدخال الاسم والحساب', confirmButtonText: 'حسناً' });
+            Swal.fire({ icon: 'warning', title: 'نواقص', text: 'الاسم ورقم الحساب مطلوبان' });
             return;
         }
 
-        const newPoint = { id: Date.now(), name: name, account: acc };
+        const newPoint = { id: Date.now(), name: name, account: acc, phone: phone };
         myPoints.push(newPoint);
         saveAndRender();
         
         document.getElementById('newName').value = '';
         document.getElementById('newAcc').value = '';
-        Swal.fire({ icon: 'success', title: 'تمت الإضافة', timer: 1000, showConfirmButton: false });
+        document.getElementById('newPhone').value = '';
+        Swal.fire({ icon: 'success', title: 'تمت الإضافة', timer: 800, showConfirmButton: false });
     }
 
     function deletePoint(id) {
         Swal.fire({
-            title: 'هل أنت متأكد؟',
-            text: "لن تتمكن من استعادة هذه النقطة!",
+            title: 'حذف النقطة؟',
+            text: "سيتم مسحها نهائياً من القائمة",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#2563eb',
-            cancelButtonColor: '#ef4444',
-            confirmButtonText: 'نعم، احذفها',
+            confirmButtonText: 'نعم، احذف',
             cancelButtonText: 'إلغاء'
         }).then((result) => {
             if (result.isConfirmed) {
                 myPoints = myPoints.filter(p => p.id !== id);
                 visitedIds = visitedIds.filter(vId => vId !== id);
                 saveAndRender();
-                Swal.fire('تم الحذف!', 'تمت إزالة النقطة من قائمتك.', 'success');
             }
         });
+    }
+
+    function toggleFilter() {
+        showOnlyUnvisited = !showOnlyUnvisited;
+        const btn = document.getElementById('filterBtn');
+        btn.classList.toggle('active');
+        btn.innerText = showOnlyUnvisited ? "عرض جميع النقاط" : "عرض غير المزارة فقط";
+        render();
     }
 
     function saveAndRender() {
@@ -120,19 +138,27 @@
     function render() {
         const list = document.getElementById('list');
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const stats = document.getElementById('stats');
         list.innerHTML = '';
 
+        stats.innerText = `النقاط المسجلة: ${myPoints.length}`;
+
         myPoints.forEach(p => {
-            if (!p.name.toLowerCase().includes(searchTerm) && !p.account.includes(searchTerm)) return;
-            
             const isVisited = visitedIds.includes(p.id);
+            const matchesSearch = p.name.toLowerCase().includes(searchTerm) || 
+                                p.account.includes(searchTerm) || 
+                                (p.phone && p.phone.includes(searchTerm));
+
+            if (showOnlyUnvisited && isVisited) return;
+            if (!matchesSearch) return;
+
             const div = document.createElement('div');
             div.className = `point-item ${isVisited ? 'visited' : ''}`;
             div.innerHTML = `
-                <input type="checkbox" style="width:20px; height:20px" onchange="toggleVisit(${p.id})" ${isVisited ? 'checked' : ''}>
+                <input type="checkbox" style="width:22px; height:22px" onchange="toggleVisit(${p.id})" ${isVisited ? 'checked' : ''}>
                 <div class="info" onclick="toggleVisit(${p.id})">
                     <strong>${p.name}</strong>
-                    <span>حساب: ${p.account}</span>
+                    <span>حساب: ${p.account} | هاتف: ${p.phone}</span>
                 </div>
                 <button class="btn-delete" onclick="deletePoint(${p.id})">🗑️</button>
             `;
@@ -150,12 +176,11 @@
     }
 
     function generateReport() {
-        const userName = localStorage.getItem('appUserName') || 'غير معروف';
+        const userName = localStorage.getItem('appUserName') || 'غير محدد';
         const dateStr = `${new Date().toLocaleDateString('ar-EG', {weekday: 'long'})} ${new Date().toLocaleDateString('en-GB')}`;
         
         let text = `التقرير اليومي | كاشي\n`;
-        text += `المندوب: ${userName}\n`;
-        text += `التاريخ: ${dateStr}\n`;
+        text += `المندوب: ${userName}\nالتاريخ: ${dateStr}\n`;
         text += `--------------------------\n`;
         
         let count = 0;
@@ -167,31 +192,28 @@
         });
 
         if (count === 0) {
-            Swal.fire({ icon: 'info', title: 'القائمة فارغة', text: 'لم تختر أي زيارات اليوم!' });
+            Swal.fire({ icon: 'info', title: 'تنبيه', text: 'لم تختر أي نقاط مزارة!' });
             return;
         }
 
-        text += `--------------------------\n`;
-        text += `إجمالي الزيارات: ${count}`;
+        text += `--------------------------\nإجمالي الزيارات: ${count}`;
 
         navigator.clipboard.writeText(text).then(() => {
-            Swal.fire({ icon: 'success', title: 'تم النسخ!', text: `تم تجهيز تقرير لـ ${count} نقاط.`, timer: 2000 });
+            Swal.fire({ icon: 'success', title: 'تم النسخ!', text: `تقرير لـ ${count} نقاط مزارة.`, timer: 1500 });
         });
     }
 
     function resetDaily() {
         Swal.fire({
-            title: 'تصفير اليوم؟',
-            text: "سيتم مسح علامات ✅ فقط مع الحفاظ على أسماء المحلات",
+            title: 'بدء يوم جديد؟',
+            text: "سيتم تصفير علامات الصح فقط لتبدأ جولة جديدة.",
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'نعم، ابدأ يوم جديد',
-            cancelButtonText: 'تراجع'
+            confirmButtonText: 'نعم، تصفير'
         }).then((result) => {
             if (result.isConfirmed) {
                 visitedIds = [];
                 saveAndRender();
-                Swal.fire('جاهز!', 'تم تصفير زيارات اليوم.', 'success');
             }
         });
     }
@@ -200,4 +222,3 @@
 </script>
 </body>
 </html>
-

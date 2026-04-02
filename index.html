@@ -6,15 +6,18 @@
     <title>مساعد تقارير كاشي - المطور معتز</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root { --primary: #2563eb; --danger: #ef4444; --bg: #f1f5f9; --card: #ffffff; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 15px; padding-bottom: 100px; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 15px; padding-bottom: 120px; }
         .header { background: var(--card); padding: 15px; border-radius: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
         
-        /* تصميم نموذج الإضافة */
+        .user-section { background: #dbeafe; padding: 10px; border-radius: 10px; margin-bottom: 10px; display: flex; gap: 5px; }
+        .user-section input { flex: 1; padding: 8px; border: 1px solid #bfdbfe; border-radius: 5px; }
+
         .add-section { background: #e2e8f0; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
         .add-section input { width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; }
-        .btn-add { background: var(--primary); color: white; width: 100%; border: none; padding: 10px; border-radius: 8px; font-weight: bold; }
+        .btn-add { background: var(--primary); color: white; width: 100%; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
         .search-box { width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 10px; margin-bottom: 10px; box-sizing: border-box; }
 
@@ -27,17 +30,21 @@
         .info strong { display: block; }
         .info span { font-size: 0.8em; color: #64748b; }
 
-        .btn-delete { background: none; border: none; color: var(--danger); font-size: 1.2em; cursor: pointer; padding: 5px 10px; }
+        .btn-delete { background: none; border: none; color: var(--danger); font-size: 1.2em; cursor: pointer; }
 
-        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
-        .btn-copy { background: var(--primary); color: white; width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 1.1em; }
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); z-index: 100; }
+        .btn-copy { background: var(--primary); color: white; width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 1.1em; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <h3 style="margin:0">مساعد التقارير الذكي</h3>
+    <h3 id="displayTitle" style="margin:0">مساعد التقارير الذكي</h3>
     <p style="margin:5px 0 0; font-size:0.8em; color:var(--primary)">بواسطة المطور معتز</p>
+</div>
+
+<div class="user-section">
+    <input type="text" id="userName" placeholder="اكتب اسمك هنا (للمندوب)..." oninput="saveUserName()">
 </div>
 
 <div class="add-section">
@@ -56,14 +63,24 @@
 </div>
 
 <script>
-    // جلب البيانات من ذاكرة الموبايل أو بدء مصفوفة فارغة
     let myPoints = JSON.parse(localStorage.getItem('savedPoints') || '[]');
     let visitedIds = JSON.parse(localStorage.getItem('visitedPoints') || '[]');
+    
+    // تحميل اسم المندوب عند الفتح
+    document.getElementById('userName').value = localStorage.getItem('appUserName') || '';
+
+    function saveUserName() {
+        const name = document.getElementById('userName').value;
+        localStorage.setItem('appUserName', name);
+    }
 
     function addNewPoint() {
         const name = document.getElementById('newName').value;
         const acc = document.getElementById('newAcc').value;
-        if (!name || !acc) return alert("الرجاء إدخال الاسم والحساب");
+        if (!name || !acc) {
+            Swal.fire({ icon: 'warning', title: 'عفواً', text: 'الرجاء إدخال الاسم والحساب', confirmButtonText: 'حسناً' });
+            return;
+        }
 
         const newPoint = { id: Date.now(), name: name, account: acc };
         myPoints.push(newPoint);
@@ -71,14 +88,27 @@
         
         document.getElementById('newName').value = '';
         document.getElementById('newAcc').value = '';
+        Swal.fire({ icon: 'success', title: 'تمت الإضافة', timer: 1000, showConfirmButton: false });
     }
 
     function deletePoint(id) {
-        if (confirm("هل تريد حذف هذه النقطة نهائياً؟")) {
-            myPoints = myPoints.filter(p => p.id !== id);
-            visitedIds = visitedIds.filter(vId => vId !== id);
-            saveAndRender();
-        }
+        Swal.fire({
+            title: 'هل أنت متأكد؟',
+            text: "لن تتمكن من استعادة هذه النقطة!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#2563eb',
+            cancelButtonColor: '#ef4444',
+            confirmButtonText: 'نعم، احذفها',
+            cancelButtonText: 'إلغاء'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                myPoints = myPoints.filter(p => p.id !== id);
+                visitedIds = visitedIds.filter(vId => vId !== id);
+                saveAndRender();
+                Swal.fire('تم الحذف!', 'تمت إزالة النقطة من قائمتك.', 'success');
+            }
+        });
     }
 
     function saveAndRender() {
@@ -99,8 +129,8 @@
             const div = document.createElement('div');
             div.className = `point-item ${isVisited ? 'visited' : ''}`;
             div.innerHTML = `
-                <input type="checkbox" onchange="toggleVisit(${p.id})" ${isVisited ? 'checked' : ''}>
-                <div class="info">
+                <input type="checkbox" style="width:20px; height:20px" onchange="toggleVisit(${p.id})" ${isVisited ? 'checked' : ''}>
+                <div class="info" onclick="toggleVisit(${p.id})">
                     <strong>${p.name}</strong>
                     <span>حساب: ${p.account}</span>
                 </div>
@@ -120,32 +150,54 @@
     }
 
     function generateReport() {
+        const userName = localStorage.getItem('appUserName') || 'غير معروف';
         const dateStr = `${new Date().toLocaleDateString('ar-EG', {weekday: 'long'})} ${new Date().toLocaleDateString('en-GB')}`;
-        let text = `التقرير اليومي | ${dateStr}\n--------------------------\n`;
+        
+        let text = `التقرير اليومي | كاشي\n`;
+        text += `المندوب: ${userName}\n`;
+        text += `التاريخ: ${dateStr}\n`;
+        text += `--------------------------\n`;
         
         let count = 0;
         myPoints.forEach(p => {
             if (visitedIds.includes(p.id)) {
-                text += `النقطة: ${p.name}\nالحساب: ${p.account}\n--------------------------\n`;
+                text += `✅ ${p.name} (${p.account})\n`;
                 count++;
             }
         });
 
-        if (count === 0) return alert("لم تقم بزيارة أي نقطة اليوم!");
+        if (count === 0) {
+            Swal.fire({ icon: 'info', title: 'القائمة فارغة', text: 'لم تختر أي زيارات اليوم!' });
+            return;
+        }
+
+        text += `--------------------------\n`;
+        text += `إجمالي الزيارات: ${count}`;
 
         navigator.clipboard.writeText(text).then(() => {
-            alert("تم نسخ التقرير لـ " + count + " نقاط");
+            Swal.fire({ icon: 'success', title: 'تم النسخ!', text: `تم تجهيز تقرير لـ ${count} نقاط.`, timer: 2000 });
         });
     }
 
     function resetDaily() {
-        if (confirm("سيتم مسح علامات الصح فقط، هل أنت متأكد؟")) {
-            visitedIds = [];
-            saveAndRender();
-        }
+        Swal.fire({
+            title: 'تصفير اليوم؟',
+            text: "سيتم مسح علامات ✅ فقط مع الحفاظ على أسماء المحلات",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'نعم، ابدأ يوم جديد',
+            cancelButtonText: 'تراجع'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                visitedIds = [];
+                saveAndRender();
+                Swal.fire('جاهز!', 'تم تصفير زيارات اليوم.', 'success');
+            }
+        });
     }
 
     render();
 </script>
 </body>
 </html>
+

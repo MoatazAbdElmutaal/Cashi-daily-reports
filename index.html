@@ -71,7 +71,8 @@
         <h2 style="margin:0; color:var(--primary)">تقرير منطقة الدبة</h2>
         <p style="margin:5px 0 0; font-size:0.9em">المندوب: محمد خالد</p>
     </div>
-
+<input type="text" id="searchInput" class="search-box" placeholder="ابحث باسم المحل أو الرقم..." oninput="render()">
+    
     <div class="controls">
         <button class="btn-filter" onclick="toggleFilter()" id="filterBtn">عرض غير المزارة فقط</button>
         <button class="btn-reset" onclick="resetHistory()">تصفير</button>
@@ -84,17 +85,117 @@
 
 <script>
     const myPoints = [
-        { id: 1, name: "نقطة الأمل", phone: "0123456789", account: "ACC-1001" },
-        { id: 2, name: "سوبر ماركت البركة", phone: "0987654321", account: "ACC-1002" },
-        { id: 3, name: "محل السلام", phone: "0112233445", account: "ACC-1003" },
-        { id: 4, name: "مكتبة النور", phone: "0556677889", account: "ACC-1004" }
-    ];
+    { id: 1, name: "سليمان محمدين سبيل", phone: "", account: "2021140" },
+    { id: 2, name: "نادر أحمد الدومة", phone: "", account: "200000918" },
+    { id: 3, name: "نادر أحمد الدومة", phone: "", account: "200012209" },
+    { id: 4, name: "مجمع أحباب المصطفى", phone: "", account: "200001075" },
+    { id: 5, name: "بقالة الجلابي", phone: "", account: "200001161" },
+    { id: 6, name: "الحرمين للخدمات", phone: "", account: "200001534" },
+    { id: 7, name: "الإحسان لبن", phone: "", account: "200004133" },
+    { id: 8, name: "نوري للخدمات", phone: "", account: "200007301" },
+    { id: 9, name: "الأديب للخدمات", phone: "", account: "200007309" },
+    { id: 10, name: "أبوحمد للخدمات", phone: "", account: "200007324" },
+    { id: 11, name: "محي الدين للخدمات", phone: "", account: "200007363" },
+    { id: 12, name: "محي الدين للخدمات", phone: "", account: "200009197" },
+    { id: 13, name: "بقالة أبو رفيق", phone: "", account: "200007366" },
+    { id: 14, name: "الفل مارشال للخدمات", phone: "", account: "200007368" },
+    { id: 15, name: "الهادي للخدمات", phone: "", account: "200007535" },
+    { id: 16, name: "سامي للخدمات", phone: "", account: "200007538" },
+    { id: 17, name: "ودالنمود", phone: "", account: "200007597" },
+    { id: 18, name: "ودالنمود", phone: "", account: "200007790" },
+    { id: 19, name: "ودالنمود", phone: "", account: "200012526" },
+    { id: 20, name: "مركز أبو أريج", phone: "", account: "200007599" },
+    { id: 21, name: "الصديق للخدمات", phone: "", account: "200007649" },
+    { id: 22, name: "الصديق للخدمات", phone: "", account: "200013607" },
+    { id: 23, name: "سنتر الجزيرة", phone: "", account: "200007660" },
+    { id: 24, name: "بحر المودة للخدمات", phone: "", account: "200007700" },
+    { id: 25, name: "عثمان للخدمات", phone: "", account: "200007823" },
+    { id: 26, name: "مركز الحلو للخدمات", phone: "", account: "200007827" },
+    { id: 27, name: "محل الأخوة التجاري", phone: "", account: "200007928" },
+    { id: 28, name: "سكت الرباب للخدمات", phone: "", account: "200008013" },
+    { id: 29, name: "القاضي للخدمات", phone: "", account: "200008089" },
+    { id: 30, name: "مكتبة الشامل", phone: "", account: "200008304" },
+    { id: 31, name: "محلات السيد", phone: "", account: "200008713" },
+    { id: 32, name: "منير للأنشطة المتعددة", phone: "", account: "200008761" },
+    { id: 33, name: "منير للأنشطة المتعددة", phone: "", account: "200008777" },
+    { id: 34, name: "بقالة نصرالدين", phone: "", account: "200008861" },
+    { id: 35, name: "الأنفال للجملة والقطاعي", phone: "", account: "200008914" },
+    { id: 36, name: "ملتقى أولاد أبوشوك", phone: "", account: "200008926" },
+    { id: 37, name: "ملتقى أولاد أبوشوك", phone: "", account: "200008931" },
+    { id: 38, name: "ملتقى أولاد أبوشوك", phone: "", account: "200010796" },
+    { id: 39, name: "مركز الكردفاني", phone: "", account: "200009205" },
+    { id: 40, name: "آدم علي أبكر أحمد", phone: "", account: "200009216" },
+    { id: 41, name: "مركز عريفية للخدمات", phone: "", account: "200009218" },
+    { id: 42, name: "أبوتالين للخدمات", phone: "", account: "200009236" },
+    { id: 43, name: "ركس للخدمات", phone: "", account: "200009329" },
+    { id: 44, name: "مركز موني", phone: "", account: "200009346" },
+    { id: 45, name: "مركز موني", phone: "", account: "200012332" },
+    { id: 46, name: "معتصم للخدمات", phone: "", account: "200009359" },
+    { id: 47, name: "ود العمدة للخدمات", phone: "", account: "200009366" },
+    { id: 48, name: "مركز الأمل للخدمات الإلكترونية", phone: "", account: "200009791" },
+    { id: 49, name: "مركز الأمل للخدمات الإلكترونية", phone: "", account: "200011285" },
+    { id: 50, name: "أبوعلوة للخدمات", phone: "", account: "200009825" },
+    { id: 51, name: "مبيعات أبو نهي التجارية", phone: "", account: "200009970" },
+    { id: 52, name: "مبيعات أبو نهي التجارية", phone: "", account: "200010592" },
+    { id: 53, name: "مبيعات أبو نهي التجارية", phone: "", account: "200010594" },
+    { id: 54, name: "مبيعات أبو نهي التجارية", phone: "", account: "200013261" },
+    { id: 55, name: "البرعي إبراهيم بخيت الصديق", phone: "", account: "200010275" },
+    { id: 56, name: "مزمل للخدمات", phone: "", account: "200010433" },
+    { id: 57, name: "ثقة للخدمات", phone: "", account: "200010439" },
+    { id: 58, name: "عمر الطاهر إبراهيم محمد", phone: "", account: "200010444" },
+    { id: 59, name: "مركز ود الفاشر للخدمات", phone: "", account: "200010455" },
+    { id: 60, name: "ود فارس للخدمات", phone: "", account: "200010577" },
+    { id: 61, name: "محلات كابو", phone: "", account: "200010802" },
+    { id: 62, name: "آدم سليمان صالح أحمد", phone: "", account: "200011039" },
+    { id: 63, name: "فيصل أبو برأة للخدمات", phone: "", account: "200011072" },
+    { id: 64, name: "فيصل أبو برأة للخدمات", phone: "", account: "200011074" },
+    { id: 65, name: "إبراهيم محمد إسحق إبراهيم", phone: "", account: "200011080" },
+    { id: 66, name: "طه سالم حسين محمد", phone: "", account: "200011151" },
+    { id: 67, name: "أولاد جلي للخدمات", phone: "", account: "200011177" },
+    { id: 68, name: "ود قراش للخدمات", phone: "", account: "200011277" },
+    { id: 69, name: "عبده للخدمات", phone: "", account: "200011346" },
+    { id: 70, name: "عيسى آدم أحمد عيسى", phone: "", account: "200011541" },
+    { id: 71, name: "بابكر صالح للخدمات", phone: "", account: "200011815" },
+    { id: 72, name: "شمو للخدمات", phone: "", account: "200011822" },
+    { id: 73, name: "محلات البلوية ود الرفيد", phone: "", account: "200011829" },
+    { id: 74, name: "البريطاني للخدمات", phone: "", account: "200011835" },
+    { id: 75, name: "إبرة للخدمات", phone: "", account: "200011838" },
+    { id: 76, name: "آدم يعقوب للخدمات", phone: "", account: "200012053" },
+    { id: 77, name: "بقالة اليقين", phone: "", account: "200012215" },
+    { id: 78, name: "بقالة اليقين", phone: "", account: "200012216" },
+    { id: 79, name: "بقالة ود الطاهر", phone: "", account: "200012223" },
+    { id: 80, name: "أولاد كردفان", phone: "", account: "200012301" },
+    { id: 81, name: "مالك للخدمات", phone: "", account: "200012305" },
+    { id: 82, name: "موسى ناصر أورويس شريف", phone: "", account: "200012312" },
+    { id: 83, name: "النجمة للخدمات", phone: "", account: "200012609" },
+    { id: 84, name: "عبدالرحمن للخدمات", phone: "", account: "200012689" },
+    { id: 85, name: "مركز سراج الدين للتحويلات", phone: "", account: "200013059" },
+    { id: 86, name: "عامر آدم عبد القادر إسماعيل", phone: "", account: "200013258" },
+    { id: 87, name: "بقالة أبو أمنية", phone: "", account: "200013374" },
+    { id: 88, name: "ود عبدالعزيز للمواد الغذائية", phone: "", account: "200013375" }
+];
+        
 
     let showOnlyUnvisited = false;
 
     function render() {
         const list = document.getElementById('list');
-        list.innerHTML = '';
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase(); // النص الذي تكتبه في البحث
+    list.innerHTML = '';
+    
+    const visitedIds = JSON.parse(localStorage.getItem('visitedPoints') || '[]');
+
+    myPoints.forEach(p => {
+        const isVisited = visitedIds.includes(p.id);
+        
+        // هذا السطر هو المسؤول عن البحث بالاسم (p.name) أو الرقم (p.account)
+        const matchesSearch = p.name.toLowerCase().includes(searchTerm) || 
+                            p.account.includes(searchTerm);
+
+        if (showOnlyUnvisited && isVisited) return;
+        if (!matchesSearch) return;
+    
+    
         const visitedIds = JSON.parse(localStorage.getItem('visitedPoints') || '[]');
 
         myPoints.forEach(p => {

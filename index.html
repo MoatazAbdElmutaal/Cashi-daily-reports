@@ -3,275 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مساعد تقرير الدبة - المطور معتز</title>
+    <title>مساعد تقارير كاشي - المطور معتز</title>
     <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<link rel="apple-touch-icon" href="icon.png">
-    
+    <meta name="theme-color" content="#2563eb">
     <style>
-        :root {
-            --primary: #2563eb;
-            --success: #22c55e;
-            --bg: #f1f5f9;
-            --card: #ffffff;
-            --text: #1e293b;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0; padding: 10px;
-            padding-bottom: 80px; /* مساحة للزر الثابت */
-        }
-
-        .container { max-width: 500px; margin: 0 auto; }
+        :root { --primary: #2563eb; --danger: #ef4444; --bg: #f1f5f9; --card: #ffffff; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 15px; padding-bottom: 100px; }
+        .header { background: var(--card); padding: 15px; border-radius: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
         
-        .header {
-            background: var(--card);
-            padding: 15px; border-radius: 15px;
-            margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            text-align: center;
+        /* تصميم نموذج الإضافة */
+        .add-section { background: #e2e8f0; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+        .add-section input { width: 100%; padding: 10px; margin-bottom: 8px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; }
+        .btn-add { background: var(--primary); color: white; width: 100%; border: none; padding: 10px; border-radius: 8px; font-weight: bold; }
+
+        .search-box { width: 100%; padding: 12px; border: 2px solid #cbd5e1; border-radius: 10px; margin-bottom: 10px; box-sizing: border-box; }
+
+        .point-item { 
+            display: flex; align-items: center; background: var(--card); 
+            padding: 12px; border-radius: 10px; margin-bottom: 8px; border-right: 5px solid #cbd5e1;
         }
-
-        .search-box {
-            width: 100%; padding: 12px;
-            border: 2px solid #e2e8f0; border-radius: 10px;
-            margin-bottom: 10px; font-size: 1rem;
-            box-sizing: border-box; outline: none;
-        }
-
-        .search-box:focus { border-color: var(--primary); }
-
-        .controls { display: flex; gap: 8px; margin-bottom: 15px; }
-
-        button {
-            flex: 1; padding: 10px; border: none; border-radius: 8px;
-            font-weight: bold; cursor: pointer; font-size: 0.9em;
-        }
-
-        .btn-filter { background: #64748b; color: white; }
-        .btn-reset { background: #ef4444; color: white; flex: 0.3; }
-
-        .point-item {
-            display: flex; align-items: center;
-            background: var(--card); padding: 12px;
-            border-radius: 10px; margin-bottom: 6px;
-            border: 1px solid #e2e8f0;
-        }
-
-        .point-item.visited { border-right: 4px solid var(--success); opacity: 0.7; }
-        
-        .visited-mark { color: var(--success); margin-right: auto; font-size: 0.8em; display: none; }
-        .visited .visited-mark { display: block; }
-
-        input[type="checkbox"] { width: 20px; height: 20px; margin-left: 10px; }
-        
-        .info strong { display: block; font-size: 1em; }
+        .point-item.visited { border-right-color: #22c55e; opacity: 0.6; }
+        .info { flex-grow: 1; margin-right: 10px; }
+        .info strong { display: block; }
         .info span { font-size: 0.8em; color: #64748b; }
 
-        .footer-action {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: white; padding: 10px;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-        }
+        .btn-delete { background: none; border: none; color: var(--danger); font-size: 1.2em; cursor: pointer; padding: 5px 10px; }
 
-        .btn-copy {
-            background: var(--primary); color: white;
-            width: 100%; max-width: 500px; margin: 0 auto; display: block;
-            padding: 15px; font-size: 1.1em; border-radius: 10px;
-        }
+        .footer { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); }
+        .btn-copy { background: var(--primary); color: white; width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 1.1em; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h3 style="margin:0; color:var(--primary)">تقرير منطقة الدبة</h3>
-        <p style="margin:5px 0 0; font-size:0.8em">المندوب: محمد خالد</p>
-    </div>
-
-    <input type="text" id="searchInput" class="search-box" placeholder="ابحث باسم المحل أو الرقم..." oninput="render()">
-
-    <div class="controls">
-        <button class="btn-filter" onclick="toggleFilter()" id="filterBtn">إخفاء المزارة</button>
-        <button class="btn-reset" onclick="resetHistory()">تصفير</button>
-    </div>
-
-    <div id="list"></div>
+<div class="header">
+    <h3 style="margin:0">مساعد التقارير الذكي</h3>
+    <p style="margin:5px 0 0; font-size:0.8em; color:var(--primary)">بواسطة المطور معتز</p>
 </div>
 
-<div class="footer-action">
-    <button class="btn-copy" onclick="generateReport()">نسخ وحفظ الزيارات ✅</button>
+<div class="add-section">
+    <input type="text" id="newName" placeholder="اسم المحل الجديد...">
+    <input type="number" id="newAcc" placeholder="رقم الحساب...">
+    <button class="btn-add" onclick="addNewPoint()">+ إضافة النقطة للقائمة</button>
+</div>
+
+<input type="text" id="searchInput" class="search-box" placeholder="بحث في النقاط..." oninput="render()">
+
+<div id="list"></div>
+
+<div class="footer">
+    <button class="btn-copy" onclick="generateReport()">نسخ التقرير وحفظ الزيارات ✅</button>
+    <button onclick="resetDaily()" style="width:100%; margin-top:5px; background:none; border:none; color:gray; font-size:0.7em">تصفير زيارات اليوم فقط</button>
 </div>
 
 <script>
-    // هنا تضع الـ 90 نقطة
-    const myPoints = [
-    { id: 1, name: "سليمان محمدين سبيل", phone: "", account: "2021140" },
-    { id: 2, name: "نادر أحمد الدومة", phone: "", account: "200000918" },
-    { id: 3, name: "نادر أحمد الدومة", phone: "", account: "200012209" },
-    { id: 4, name: "مجمع أحباب المصطفى", phone: "", account: "200001075" },
-    { id: 5, name: "بقالة الجلابي", phone: "", account: "200001161" },
-    { id: 6, name: "الحرمين للخدمات", phone: "", account: "200001534" },
-    { id: 7, name: "الإحسان لبن", phone: "", account: "200004133" },
-    { id: 8, name: "نوري للخدمات", phone: "", account: "200007301" },
-    { id: 9, name: "الأديب للخدمات", phone: "", account: "200007309" },
-    { id: 10, name: "أبوحمد للخدمات", phone: "", account: "200007324" },
-    { id: 11, name: "محي الدين للخدمات", phone: "", account: "200007363" },
-    { id: 12, name: "محي الدين للخدمات", phone: "", account: "200009197" },
-    { id: 13, name: "بقالة أبو رفيق", phone: "", account: "200007366" },
-    { id: 14, name: "الفل مارشال للخدمات", phone: "", account: "200007368" },
-    { id: 15, name: "الهادي للخدمات", phone: "", account: "200007535" },
-    { id: 16, name: "سامي للخدمات", phone: "", account: "200007538" },
-    { id: 17, name: "ودالنمود", phone: "", account: "200007597" },
-    { id: 18, name: "ودالنمود", phone: "", account: "200007790" },
-    { id: 19, name: "ودالنمود", phone: "", account: "200012526" },
-    { id: 20, name: "مركز أبو أريج", phone: "", account: "200007599" },
-    { id: 21, name: "الصديق للخدمات", phone: "", account: "200007649" },
-    { id: 22, name: "الصديق للخدمات", phone: "", account: "200013607" },
-    { id: 23, name: "سنتر الجزيرة", phone: "", account: "200007660" },
-    { id: 24, name: "بحر المودة للخدمات", phone: "", account: "200007700" },
-    { id: 25, name: "عثمان للخدمات", phone: "", account: "200007823" },
-    { id: 26, name: "مركز الحلو للخدمات", phone: "", account: "200007827" },
-    { id: 27, name: "محل الأخوة التجاري", phone: "", account: "200007928" },
-    { id: 28, name: "سكت الرباب للخدمات", phone: "", account: "200008013" },
-    { id: 29, name: "القاضي للخدمات", phone: "", account: "200008089" },
-    { id: 30, name: "مكتبة الشامل", phone: "", account: "200008304" },
-    { id: 31, name: "محلات السيد", phone: "", account: "200008713" },
-    { id: 32, name: "منير للأنشطة المتعددة", phone: "", account: "200008761" },
-    { id: 33, name: "منير للأنشطة المتعددة", phone: "", account: "200008777" },
-    { id: 34, name: "بقالة نصرالدين", phone: "", account: "200008861" },
-    { id: 35, name: "الأنفال للجملة والقطاعي", phone: "", account: "200008914" },
-    { id: 36, name: "ملتقى أولاد أبوشوك", phone: "", account: "200008926" },
-    { id: 37, name: "ملتقى أولاد أبوشوك", phone: "", account: "200008931" },
-    { id: 38, name: "ملتقى أولاد أبوشوك", phone: "", account: "200010796" },
-    { id: 39, name: "مركز الكردفاني", phone: "", account: "200009205" },
-    { id: 40, name: "آدم علي أبكر أحمد", phone: "", account: "200009216" },
-    { id: 41, name: "مركز عريفية للخدمات", phone: "", account: "200009218" },
-    { id: 42, name: "أبوتالين للخدمات", phone: "", account: "200009236" },
-    { id: 43, name: "ركس للخدمات", phone: "", account: "200009329" },
-    { id: 44, name: "مركز موني", phone: "", account: "200009346" },
-    { id: 45, name: "مركز موني", phone: "", account: "200012332" },
-    { id: 46, name: "معتصم للخدمات", phone: "", account: "200009359" },
-    { id: 47, name: "ود العمدة للخدمات", phone: "", account: "200009366" },
-    { id: 48, name: "مركز الأمل للخدمات الإلكترونية", phone: "", account: "200009791" },
-    { id: 49, name: "مركز الأمل للخدمات الإلكترونية", phone: "", account: "200011285" },
-    { id: 50, name: "أبوعلوة للخدمات", phone: "", account: "200009825" },
-    { id: 51, name: "مبيعات أبو نهي التجارية", phone: "", account: "200009970" },
-    { id: 52, name: "مبيعات أبو نهي التجارية", phone: "", account: "200010592" },
-    { id: 53, name: "مبيعات أبو نهي التجارية", phone: "", account: "200010594" },
-    { id: 54, name: "مبيعات أبو نهي التجارية", phone: "", account: "200013261" },
-    { id: 55, name: "البرعي إبراهيم بخيت الصديق", phone: "", account: "200010275" },
-    { id: 56, name: "مزمل للخدمات", phone: "", account: "200010433" },
-    { id: 57, name: "ثقة للخدمات", phone: "", account: "200010439" },
-    { id: 58, name: "عمر الطاهر إبراهيم محمد", phone: "", account: "200010444" },
-    { id: 59, name: "مركز ود الفاشر للخدمات", phone: "", account: "200010455" },
-    { id: 60, name: "ود فارس للخدمات", phone: "", account: "200010577" },
-    { id: 61, name: "محلات كابو", phone: "", account: "200010802" },
-    { id: 62, name: "آدم سليمان صالح أحمد", phone: "", account: "200011039" },
-    { id: 63, name: "فيصل أبو برأة للخدمات", phone: "", account: "200011072" },
-    { id: 64, name: "فيصل أبو برأة للخدمات", phone: "", account: "200011074" },
-    { id: 65, name: "إبراهيم محمد إسحق إبراهيم", phone: "", account: "200011080" },
-    { id: 66, name: "طه سالم حسين محمد", phone: "", account: "200011151" },
-    { id: 67, name: "أولاد جلي للخدمات", phone: "", account: "200011177" },
-    { id: 68, name: "ود قراش للخدمات", phone: "", account: "200011277" },
-    { id: 69, name: "عبده للخدمات", phone: "", account: "200011346" },
-    { id: 70, name: "عيسى آدم أحمد عيسى", phone: "", account: "200011541" },
-    { id: 71, name: "بابكر صالح للخدمات", phone: "", account: "200011815" },
-    { id: 72, name: "شمو للخدمات", phone: "", account: "200011822" },
-    { id: 73, name: "محلات البلوية ود الرفيد", phone: "", account: "200011829" },
-    { id: 74, name: "البريطاني للخدمات", phone: "", account: "200011835" },
-    { id: 75, name: "إبرة للخدمات", phone: "", account: "200011838" },
-    { id: 76, name: "آدم يعقوب للخدمات", phone: "", account: "200012053" },
-    { id: 77, name: "بقالة اليقين", phone: "", account: "200012215" },
-    { id: 78, name: "بقالة اليقين", phone: "", account: "200012216" },
-    { id: 79, name: "بقالة ود الطاهر", phone: "", account: "200012223" },
-    { id: 80, name: "أولاد كردفان", phone: "", account: "200012301" },
-    { id: 81, name: "مالك للخدمات", phone: "", account: "200012305" },
-    { id: 82, name: "موسى ناصر أورويس شريف", phone: "", account: "200012312" },
-    { id: 83, name: "النجمة للخدمات", phone: "", account: "200012609" },
-    { id: 84, name: "عبدالرحمن للخدمات", phone: "", account: "200012689" },
-    { id: 85, name: "مركز سراج الدين للتحويلات", phone: "", account: "200013059" },
-    { id: 86, name: "عامر آدم عبد القادر إسماعيل", phone: "", account: "200013258" },
-    { id: 87, name: "بقالة أبو أمنية", phone: "", account: "200013374" },
-    { id: 88, name: "ود عبدالعزيز للمواد الغذائية", phone: "", account: "200013375" }
-];
-    
+    // جلب البيانات من ذاكرة الموبايل أو بدء مصفوفة فارغة
+    let myPoints = JSON.parse(localStorage.getItem('savedPoints') || '[]');
+    let visitedIds = JSON.parse(localStorage.getItem('visitedPoints') || '[]');
 
-    let showOnlyUnvisited = false;
+    function addNewPoint() {
+        const name = document.getElementById('newName').value;
+        const acc = document.getElementById('newAcc').value;
+        if (!name || !acc) return alert("الرجاء إدخال الاسم والحساب");
+
+        const newPoint = { id: Date.now(), name: name, account: acc };
+        myPoints.push(newPoint);
+        saveAndRender();
+        
+        document.getElementById('newName').value = '';
+        document.getElementById('newAcc').value = '';
+    }
+
+    function deletePoint(id) {
+        if (confirm("هل تريد حذف هذه النقطة نهائياً؟")) {
+            myPoints = myPoints.filter(p => p.id !== id);
+            visitedIds = visitedIds.filter(vId => vId !== id);
+            saveAndRender();
+        }
+    }
+
+    function saveAndRender() {
+        localStorage.setItem('savedPoints', JSON.stringify(myPoints));
+        localStorage.setItem('visitedPoints', JSON.stringify(visitedIds));
+        render();
+    }
 
     function render() {
         const list = document.getElementById('list');
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
         list.innerHTML = '';
-        
-        const visitedIds = JSON.parse(localStorage.getItem('visitedPoints') || '[]');
 
         myPoints.forEach(p => {
+            if (!p.name.toLowerCase().includes(searchTerm) && !p.account.includes(searchTerm)) return;
+            
             const isVisited = visitedIds.includes(p.id);
-            const matchesSearch = p.name.toLowerCase().includes(searchTerm) || 
-                                p.phone.includes(searchTerm) || 
-                                p.account.includes(searchTerm);
-
-            if (showOnlyUnvisited && isVisited) return;
-            if (!matchesSearch) return;
-
             const div = document.createElement('div');
             div.className = `point-item ${isVisited ? 'visited' : ''}`;
             div.innerHTML = `
-                <input type="checkbox" id="check${p.id}" data-id="${p.id}">
-                <label class="info" for="check${p.id}">
+                <input type="checkbox" onchange="toggleVisit(${p.id})" ${isVisited ? 'checked' : ''}>
+                <div class="info">
                     <strong>${p.name}</strong>
-                    <span>${p.phone} | ${p.account}</span>
-                </label>
-                <span class="visited-mark">تمت ✅</span>
+                    <span>حساب: ${p.account}</span>
+                </div>
+                <button class="btn-delete" onclick="deletePoint(${p.id})">🗑️</button>
             `;
             list.appendChild(div);
         });
     }
 
+    function toggleVisit(id) {
+        if (visitedIds.includes(id)) {
+            visitedIds = visitedIds.filter(vId => vId !== id);
+        } else {
+            visitedIds.push(id);
+        }
+        saveAndRender();
+    }
+
     function generateReport() {
-        const selected = document.querySelectorAll('input[type="checkbox"]:checked');
-        if (selected.length === 0) return alert("حدد نقاط أولاً");
-
-        let visitedIds = JSON.parse(localStorage.getItem('visitedPoints') || '[]');
-        
-        // التاريخ المطلوب (يوم بالعربي وتاريخ بالأرقام الكبيرة)
         const dateStr = `${new Date().toLocaleDateString('ar-EG', {weekday: 'long'})} ${new Date().toLocaleDateString('en-GB')}`;
+        let text = `التقرير اليومي | ${dateStr}\n--------------------------\n`;
         
-        let text = `التقرير اليومي | ${dateStr}\nالمندوب: محمد خالد | المنطقة: الدبة\n--------------------------\n`;
-
-        selected.forEach(cb => {
-            const id = parseInt(cb.dataset.id);
-            const p = myPoints.find(item => item.id === id);
-            text += `اسم النقطة: ${p.name}\nالهاتف: ${p.phone}\nالحساب: ${p.account}\n--------------------------\n`;
-            if (!visitedIds.includes(id)) visitedIds.push(id);
+        let count = 0;
+        myPoints.forEach(p => {
+            if (visitedIds.includes(p.id)) {
+                text += `النقطة: ${p.name}\nالحساب: ${p.account}\n--------------------------\n`;
+                count++;
+            }
         });
 
-        localStorage.setItem('visitedPoints', JSON.stringify(visitedIds));
-        
-        const copyTool = document.createElement("textarea");
-        copyTool.value = text; document.body.appendChild(copyTool);
-        copyTool.select(); document.execCommand('copy');
-        document.body.removeChild(copyTool);
+        if (count === 0) return alert("لم تقم بزيارة أي نقطة اليوم!");
 
-        alert("تم النسخ وحفظ الزيارات بنجاح!");
-        render();
+        navigator.clipboard.writeText(text).then(() => {
+            alert("تم نسخ التقرير لـ " + count + " نقاط");
+        });
     }
 
-    function toggleFilter() {
-        showOnlyUnvisited = !showOnlyUnvisited;
-        document.getElementById('filterBtn').innerText = showOnlyUnvisited ? "عرض الكل" : "إخفاء المزارة";
-        render();
-    }
-
-    function resetHistory() {
-        if(confirm("هل تريد تصفير سجل الزيارات؟")) {
-            localStorage.removeItem('visitedPoints');
-            render();
+    function resetDaily() {
+        if (confirm("سيتم مسح علامات الصح فقط، هل أنت متأكد؟")) {
+            visitedIds = [];
+            saveAndRender();
         }
     }
 

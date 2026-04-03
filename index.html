@@ -7,6 +7,13 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#2563eb">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="importmap">
+  {
+    "imports": {
+      "@google/generative-ai": "https://esm.run/@google/generative-ai"
+    }
+  }
+</script>
     <style>
         :root { --primary: #2563eb; --danger: #ef4444; --bg: #f1f5f9; --card: #ffffff; --success: #22c55e; }
         body { font-family: sans-serif; background: var(--bg); margin: 0; padding: 15px; padding-bottom: 130px; }
@@ -69,6 +76,9 @@
 <div id="list"></div>
 
 <div class="footer">
+    <button onclick="askAI()" style="width:100%; margin-top:10px; background: linear-gradient(45deg, #f59e0b, #d97706); color: white; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3);">
+    ✨ طلب تحليل الأداء الذكي
+</button>
     <button class="btn-copy" onclick="generateReport()">نسخ التقرير وحفظ الزيارات ✅</button>
     <button onclick="resetDaily()" style="width:100%; margin-top:8px; background:none; border:none; color:#94a3b8; font-size:0.8em; cursor:pointer">تصفير زيارات اليوم فقط</button>
     <button onclick="exportData()" style="flex:1; background:#0f172a; color:white; border:none; padding:8px; border-radius:5px; font-size:0.7em; cursor:pointer">📤 تصدير نسخة احتياطية</button>
@@ -76,6 +86,58 @@
 </div>
 
 <script>
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const API_KEY = "AIzaSyAl25k7IlEsqPVqEUnF4e9qWnomxNbCW_Q";
+const genAI = new GoogleGenerativeAI(API_KEY);
+
+async function askAI() {
+    const userName = localStorage.getItem('appUserName') || 'يا بطل';
+    const logs = JSON.parse(localStorage.getItem('visitLogs') || '[]');
+    const points = JSON.parse(localStorage.getItem('savedPoints') || '[]');
+
+    if (points.length === 0) {
+        return Swal.fire('تنبيه', 'ضيف محلاتك أول عشان أقدر أحللها!', 'info');
+    }
+
+    Swal.fire({
+        title: 'جاري التحليل الذكي...',
+        text: 'بنشوف شغلك كيف ووقعت وين ونسيت شنو ..ثواني بس 🧠',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    // تجهيز البيانات للنظام
+    const dataSummary = points.map(p => {
+        const history = logs.filter(l => l.id === p.id);
+        const lastDate = history.length > 0 ? new Date(history[history.length-1].date).toLocaleDateString('en-GB') : 'لم يزر';
+        return `- ${p.name}: آخر زيارة (${lastDate})`;
+    }).join('\n');
+
+    const prompt = `أنت مساعد ذكي لمندوب كاشي بالسودان. المندوب اسمه ${userName}. 
+    حلل البيانات دي واديني نصيحة بلهجة سودانية (مكنة، جغم، شد حيلك): \n${dataSummary}`;
+
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+
+        Swal.fire({
+            title: `تقرير المكنة ${userName}`,
+            html: `<div style="text-align:right; direction:rtl">${text.replace(/\n/g, '<br>')}</div>`,
+            confirmButtonText: 'وصلت يا معلم 🦾'
+        });
+    } catch (error) {
+        console.error(error);
+        Swal.fire('خطأ', 'تأكد من الـ API Key أو اتصال الإنترنت', 'error');
+    }
+}
+
+// اجعل الدالة متاحة للزرار في HTML
+window.askAI = askAI;
+
+
     let myPoints = JSON.parse(localStorage.getItem('savedPoints') || '[]');
     let visitedIds = JSON.parse(localStorage.getItem('visitedPoints') || '[]');
     let showOnlyUnvisited = false;
@@ -85,6 +147,34 @@
     function saveUserName() {
         localStorage.setItem('appUserName', document.getElementById('userName').value);
     }
+    // أضف هذه المتغيرات في بداية السكربت
+let visitLogs = JSON.parse(localStorage.getItem('visitLogs') || '[]');
+
+function toggleVisit(id) {
+    if (visitedIds.includes(id)) {
+        visitedIds = visitedIds.filter(vId => vId !== id);
+        // نمسح آخر سجل زيارة لو لغينا الصح (اختياري)
+        visitLogs = visitLogs.filter(log => !(log.id === id && isToday(new Date(log.date))));
+    } else {
+        visitedIds.push(id);
+        // تسجيل الزيارة بالتاريخ والوقت
+        visitLogs.push({
+            id: id,
+            name: myPoints.find(p => p.id === id).name,
+            date: new Date().toISOString()
+        });
+    }
+    localStorage.setItem('visitLogs', JSON.stringify(visitLogs));
+    saveAndRender();
+}
+
+// دالة مساعدة للتأكد من التاريخ
+function isToday(someDate) {
+    const today = new Date();
+    return someDate.getDate() == today.getDate() &&
+           someDate.getMonth() == today.getMonth() &&
+           someDate.getFullYear() == today.getFullYear();
+}
 
     function addNewPoint() {
         const name = document.getElementById('newName').value;

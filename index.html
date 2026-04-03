@@ -71,6 +71,8 @@
 <div class="footer">
     <button class="btn-copy" onclick="generateReport()">نسخ التقرير وحفظ الزيارات ✅</button>
     <button onclick="resetDaily()" style="width:100%; margin-top:8px; background:none; border:none; color:#94a3b8; font-size:0.8em; cursor:pointer">تصفير زيارات اليوم فقط</button>
+    <button onclick="exportData()" style="flex:1; background:#0f172a; color:white; border:none; padding:8px; border-radius:5px; font-size:0.7em; cursor:pointer">📤 تصدير نسخة احتياطية</button>
+    <button onclick="importData()" style="flex:1; background:#475569; color:white; border:none; padding:8px; border-radius:5px; font-size:0.7em; cursor:pointer">📥 استيراد نسخة</button>
 </div>
 
 <script>
@@ -170,15 +172,44 @@ function render() {
     });
 }
 
-// ميزة إضافية "للإحترافية": تصدير البيانات كملف نصي
+// دالة تصدير البيانات كملف نصي
 function exportData() {
+    if (myPoints.length === 0) {
+        return Swal.fire('عفواً', 'لا توجد نقاط لتصديرها', 'error');
+    }
     const data = JSON.stringify(myPoints);
     const blob = new Blob([data], {type: 'text/plain'});
     const a = document.createElement('a');
+    const userName = localStorage.getItem('appUserName') || 'مندوب';
     a.href = URL.createObjectURL(blob);
-    a.download = `نقاط_كاشي_${localStorage.getItem('appUserName')}.txt`;
+    a.download = `نقاط_كاشي_${userName}.txt`;
     a.click();
-    Swal.fire('تم التصدير', 'احتفظ بهذا الملف لاسترجاع نقاطك في أي وقت', 'success');
+    Swal.fire('تم التصدير', 'تم حفظ ملف النقاط في التحميلات (Downloads)', 'success');
+}
+
+// دالة استيراد البيانات من ملف
+function importData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.txt';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = readerEvent => {
+            try {
+                const content = JSON.parse(readerEvent.target.result);
+                if (Array.isArray(content)) {
+                    myPoints = content;
+                    saveAndRender();
+                    Swal.fire('تم الاستيراد', `تم تحميل ${content.length} نقطة بنجاح`, 'success');
+                }
+            } catch (err) {
+                Swal.fire('خطأ', 'الملف غير مدعوم أو تالف', 'error');
+            }
+        }
+        reader.readAsText(file);
+    }
+    input.click();
 }
 
     function toggleVisit(id) {

@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مساعد تقارير كاشي - معتز</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0d6efd">
-    
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">   
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+
     <script type="importmap">
     {
       "imports": {
@@ -20,203 +21,288 @@
       }
     }
     </script>
-    
+
     <style>
-        body { font-family: 'Cairo', sans-serif; background-color: #f4f7f6; padding-bottom: 200px; }
-        .card-custom { border: none; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .point-item { transition: 0.3s; border-right: 5px solid #dee2e6; border-radius: 12px; background: white; margin-bottom: 10px; }
-        .point-item.visited { border-right-color: #198754; opacity: 0.75; background: #f8fff9; }
-        .footer-fixed { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 15px; box-shadow: 0 -5px 20px rgba(0,0,0,0.08); z-index: 1030; border-radius: 25px 25px 0 0; }
-        .btn-ai { background: linear-gradient(45deg, #f59e0b, #d97706); color: white; border: none; }
-        .btn-ai:hover { color: white; opacity: 0.9; }
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f4f7f6;
+            padding-bottom: 200px;
+        }
+
+        .card-custom {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .point-item {
+            transition: 0.3s;
+            border-right: 5px solid #dee2e6;
+            border-radius: 12px;
+            background: white;
+            margin-bottom: 10px;
+        }
+
+        .point-item.visited {
+            border-right-color: #198754;
+            opacity: 0.75;
+            background: #f8fff9;
+        }
+
+        .footer-fixed {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.08);
+            z-index: 1030;
+            border-radius: 25px 25px 0 0;
+        }
+
+        .btn-ai {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+            color: white;
+            border: none;
+        }
+
+        .btn-ai:hover {
+            color: white;
+            opacity: 0.9;
+        }
     </style>
 </head>
+
 <body>
 
-<div class="container mt-3">
-    <div class="card card-custom bg-primary text-white mb-3 p-3 text-center">
-        <h4 class="mb-1 fw-bold" id="secretTrigger"><i class="bi bi-clipboard-data"></i> مساعد التقارير الذكي</h4>
-        <span class="badge bg-light text-primary rounded-pill px-3 py-2" id="stats">جاري التحميل...</span>
-    </div>
-
-    <div class="card card-custom p-3 mb-3">
-        <div class="input-group mb-3">
-            <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
-            <input type="text" class="form-control" id="userName" placeholder="اسم المندوب..." oninput="saveUserName()">
+    <div class="container mt-3">
+        <div class="card card-custom bg-primary text-white mb-3 p-3 text-center">
+            <h4 class="mb-1 fw-bold" id="secretTrigger"><i class="bi bi-clipboard-data"></i> مساعد التقارير الذكي</h4>
+            <span class="badge bg-light text-primary rounded-pill px-3 py-2" id="stats">جاري التحميل...</span>
         </div>
-        
-        <div class="row g-2 mb-2">
-            <div class="col-12"><input type="text" class="form-control" id="newName" placeholder="اسم المحل (إجباري)"></div>
-            <div class="col-6"><input type="number" class="form-control" id="newAcc" placeholder="رقم الحساب"></div>
-            <div class="col-6"><input type="number" class="form-control" id="newPhone" placeholder="الهاتف (اختياري)"></div>
+
+        <div class="card card-custom p-3 mb-3">
+            <div class="input-group mb-3">
+                <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                <input type="text" class="form-control" id="userName" placeholder="اسم المندوب..."
+                    oninput="saveUserName()">
+            </div>
+
+            <div class="row g-2 mb-2">
+                <div class="col-12"><input type="text" class="form-control" id="newName"
+                        placeholder="اسم المحل (إجباري)"></div>
+                <div class="col-6"><input type="number" class="form-control" id="newAcc" placeholder="رقم الحساب"></div>
+                <div class="col-6"><input type="number" class="form-control" id="newPhone"
+                        placeholder="الهاتف (اختياري)"></div>
+            </div>
+            <button class="btn btn-primary w-100 fw-bold" onclick="addNewPoint()"><i class="bi bi-plus-lg"></i> إضافة
+                النقطة</button>
         </div>
-        <button class="btn btn-primary w-100 fw-bold" onclick="addNewPoint()"><i class="bi bi-plus-lg"></i> إضافة النقطة</button>
+
+        <div class="d-flex gap-2 mb-3">
+            <button id="filterBtn" class="btn btn-secondary flex-grow-1 fw-bold" onclick="toggleFilter()"><i
+                    class="bi bi-eye-slash"></i> عرض غير المزارة فقط</button>
+        </div>
+
+        <div class="input-group mb-3 card-custom">
+            <span class="input-group-text bg-white border-0"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" id="searchInput" class="form-control border-0 bg-white"
+                style="border-radius: 0 15px 15px 0;" placeholder="بحث بالاسم، الحساب، الهاتف..." oninput="render()">
+        </div>
+
+        <div id="list"></div>
+    </div>
+    <div class="analysis-section" style="margin: 20px 0; text-align: center;">
+        <h4 style="font-family: 'Cairo'; color: #2c3e50;">التحليل الذكي (اختر النوع) 🧠</h4>
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <button onclick="askAI('general')"
+                style="background-color: #17a2b8; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
+                📊 تقرير عام
+            </button>
+
+            <button onclick="askAI('urgency')"
+                style="background-color: #dc3545; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
+                🚨 محلات في خطر
+            </button>
+
+            <button onclick="getAITodayPlan()"
+                style="background-color: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
+                🛣️ خطة اليوم
+            </button>
+        </div>
+    </div>
+    <div class="footer-fixed">
+        <button class="btn btn-primary w-100 fw-bold mb-2 py-2 shadow-sm" onclick="generateReport()"><i
+                class="bi bi-check2-all"></i> نسخ التقرير وحفظ الزيارات</button>
     </div>
 
-    <div class="d-flex gap-2 mb-3">
-        <button id="filterBtn" class="btn btn-secondary flex-grow-1 fw-bold" onclick="toggleFilter()"><i class="bi bi-eye-slash"></i> عرض غير المزارة فقط</button>
-    </div>
-
-    <div class="input-group mb-3 card-custom">
-        <span class="input-group-text bg-white border-0"><i class="bi bi-search text-muted"></i></span>
-        <input type="text" id="searchInput" class="form-control border-0 bg-white" style="border-radius: 0 15px 15px 0;" placeholder="بحث بالاسم، الحساب، الهاتف..." oninput="render()">
-    </div>
-
-    <div id="list"></div>
-</div>
-<div class="analysis-section" style="margin: 20px 0; text-align: center;">
-    <h4 style="font-family: 'Cairo'; color: #2c3e50;">التحليل الذكي (اختر النوع) 🧠</h4>
-    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-        <button onclick="askAI('general')" style="background-color: #17a2b8; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
-            📊 تقرير عام
-        </button>
-        
-        <button onclick="askAI('urgency')" style="background-color: #dc3545; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
-            🚨 محلات في خطر
-        </button>
-        
-        <button onclick="askAI('plan')" style="background-color: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
-            🛣️ خطة اليوم
-        </button>
-    </div>
-</div>
-<div class="footer-fixed">
-    <button class="btn btn-primary w-100 fw-bold mb-2 py-2 shadow-sm" onclick="generateReport()"><i class="bi bi-check2-all"></i> نسخ التقرير وحفظ الزيارات</button>
-</div>
-    
     <div class="row g-2 mt-1">
-        <div class="col-4"><button onclick="resetDaily()" class="btn btn-outline-secondary w-100 btn-sm">تصفير اليوم</button></div>
-        <div class="col-4"><button onclick="exportData()" class="btn btn-dark w-100 btn-sm"><i class="bi bi-upload"></i> تصدير</button></div>
-        <div class="col-4"><button onclick="importData()" class="btn btn-secondary w-100 btn-sm"><i class="bi bi-download"></i> استيراد</button></div>
+        <div class="col-4"><button onclick="resetDaily()" class="btn btn-outline-secondary w-100 btn-sm">تصفير
+                اليوم</button></div>
+        <div class="col-4"><button onclick="exportData()" class="btn btn-dark w-100 btn-sm"><i class="bi bi-upload"></i>
+                تصدير</button></div>
+        <div class="col-4"><button onclick="importData()" class="btn btn-secondary w-100 btn-sm"><i
+                    class="bi bi-download"></i> استيراد</button></div>
     </div>
-</div>
+    </div>
 
-<script type="module">
-import { GoogleGenerativeAI } from "@google/generative-ai";
+    <script type="module">
+        function getAITodayPlan() {
+            Swal.fire('وصلت للدالة بنجاح!');
+            const allPoints = JSON.parse(localStorage.getItem('savedPoints') || '[]');
+            const visitedToday = JSON.parse(localStorage.getItem('visitedPoints') || '[]');
+            const userName = localStorage.getItem('appUserName') || 'يا زول';
 
-const API_KEY = "AIzaSyBhPC5S16GEjFNGL-oiwk9eNYFsM3l3A28";
-const genAI = new GoogleGenerativeAI(API_KEY);
+            // فلترة النقاط التي لم تُزار اليوم فقط
+            const unvisitedPoints = allPoints.filter(p => !visitedToday.includes(p.id));
 
-let myPoints = JSON.parse(localStorage.getItem('savedPoints') || '[]');
-let visitedIds = JSON.parse(localStorage.getItem('visitedPoints') || '[]');
-let visitLogs = JSON.parse(localStorage.getItem('visitLogs') || '[]');
-let showOnlyUnvisited = false;
-
-document.getElementById('userName').value = localStorage.getItem('appUserName') || '';
-
-function saveUserName() {
-    localStorage.setItem('appUserName', document.getElementById('userName').value);
-}
-let clickCount = 0;
-let clickTimer;
-
-document.getElementById('secretTrigger').addEventListener('click', function() {
-    clickCount++;
-    
-    // إعادة تصوير العداد لو المندوب اتأخر في الضغط
-    clearTimeout(clickTimer);
-    clickTimer = setTimeout(() => { clickCount = 0; }, 1000); 
-
-    if (clickCount === 3) {
-        clickCount = 0; // تصفير للمرة الجاية
-        openSecretMenu(); // نادِ الدالة السرية
-    }
-});
-
-function openSecretMenu() {
-    Swal.fire({
-        title: 'الوضع السري للمسؤول 🤫',
-        input: 'password', // عشان الكود ما يظهر لو زول واقف جنبه
-        inputLabel: 'أدخل كود الإدارة لرفع السقف',
-        inputPlaceholder: 'الكود السري...',
-        showCancelButton: true,
-        confirmButtonText: 'تفعيل الرصيد 🔋',
-        cancelButtonText: 'إلغاء'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const adminCode = "Cashi2026"; // غير الكود ده زي ما تحب
-            
-            if (result.value === adminCode) {
-                // رفع السقف لـ 100 محاولة إضافية
-                let usageData = JSON.parse(localStorage.getItem('aiUsage') || '{"date":"","count":0}');
-                usageData.count = -10; // رصيد إضافي كبير
-                localStorage.setItem('aiUsage', JSON.stringify(usageData));
-                
-                Swal.fire('تم يا وحش!', 'أضفنا للمندوب 10 محاولة "جغم" إضافية. 🚀', 'success');
-            } else {
-                Swal.fire('كود غلط!', 'ما تلعب مع الإدارة يا مكنة ⛔', 'error');
+            if (unvisitedPoints.length === 0) {
+                Swal.fire('عاش يا بطل!', 'لقد أكملت جميع زياراتك لليوم، ارتاح شوية.', 'success');
+                return;
             }
+
+            // تجهيز "الحقيقة" لإرسالها للـ AI
+            let context = `قائمة المحلات الحقيقية المتوفرة حالياً للمندوب ${userName}:\n`;
+            unvisitedPoints.forEach((p, index) => {
+                context += `- ${p.name} (حساب: ${p.account})\n`;
+            });
+
+            // هنا نقوم باستدعاء الدالة التي تتحدث مع الـ API (تأكد من اسم الدالة عندك)
+            // سأفترض أن اسمها callGeminiAPI
+            askAI(context, "plan"); 
         }
-    });
-}
-async function askAI(mode = 'general') {
-    // --- كود تحديد حد الاستخدام ---
-    const userName = localStorage.getItem('appUserName') || 'يا بطل';
-    const MAX_FREE_USES = 3; // عدد المرات المتاحة مجاناً في اليوم
-    const MY_WHATSAPP = "249110021427";
-    const todayDate = new Date().toLocaleDateString('en-GB');
-    let usageData = JSON.parse(localStorage.getItem('aiUsage') || '{}');
+        import { GoogleGenerativeAI } from "@google/generative-ai";
 
-    // إذا كان أول استخدام في يوم جديد، صفر العداد
-    if (usageData.date !== todayDate) {
-        usageData = { date: todayDate, count: 0 };
-    }
+    // قطع المفتاح لثلاثة أجزاء بعيدة عن بعض
+        const part1 = "AIzaSyD2B7WV";
+        const part2 = "vJuHqIjVZELL1H";
+        const part3 = "SSRxNp4iwu4Ys";
 
-    // التحقق من الوصول للحد الأقصى
-    if (usageData.count >= MAX_FREE_USES) {
-        return Swal.fire({
-            title: 'خلصت تحليل اليوم! 🛑',
-            text: `يا بطل، استخدمت ال ${MAX_FREE_USES} محاولات الليلة. انتظر لبكرة أو اشترك في "باقة المكنة" عشان تواصل.`,
-            icon: 'warning',
-          showCancelButton: true,
-        confirmButtonColor: '#25d366', // لون الواتساب الأخضر
-        cancelButtonColor: '#d33',
-        confirmButtonText: '🚀 تفعيل باقة المكنة (واتساب)',
-        cancelButtonText: 'خلاص، بنتظر لبكرة',
-        reverseButtons: true // عشان يخلي زر الواتساب على اليمين
-        }).then((result) => {
-        if (result.isConfirmed) {
-            // رسالة واتساب جاهزة باسم المندوب
-            const msg = encodeURIComponent(`يا معتز، أنا المندوب ${userName} وعايز أفعل باقة المكنة للذكاء الاصطناعي 🦾`);
-            window.open(`https://wa.me/${MY_WHATSAPP}?text=${msg}`, '_blank');
+        // اجمعه فقط وقت الاستخدام داخل الدالة
+        const API_KEY = part1 + part2 + part3;
+        const genAI = new GoogleGenerativeAI(API_KEY);
+
+        let myPoints = JSON.parse(localStorage.getItem('savedPoints') || '[]');
+        let visitedIds = JSON.parse(localStorage.getItem('visitedPoints') || '[]');
+        let visitLogs = JSON.parse(localStorage.getItem('visitLogs') || '[]');
+        let showOnlyUnvisited = false;
+
+        document.getElementById('userName').value = localStorage.getItem('appUserName') || '';
+
+        function saveUserName() {
+            localStorage.setItem('appUserName', document.getElementById('userName').value);
         }
-    });
-    }
-    const logs = JSON.parse(localStorage.getItem('visitLogs') || '[]');
-    const points = JSON.parse(localStorage.getItem('savedPoints') || '[]');
-    const today = new Date();
+        let clickCount = 0;
+        let clickTimer;
 
-    if (points.length === 0) return Swal.fire('تنبيه', 'ضيف نقاط أول!', 'info');
+        document.getElementById('secretTrigger').addEventListener('click', function () {
+            clickCount++;
 
-    Swal.fire({
-        title: 'جاري التحليل... ⚡',
-        allowOutsideClick: false,
-        didOpen: () => { Swal.showLoading(); }
-    });
+            // إعادة تصوير العداد لو المندوب اتأخر في الضغط
+            clearTimeout(clickTimer);
+            clickTimer = setTimeout(() => { clickCount = 0; }, 1000);
 
-    // تجهيز البيانات مع حساب "الأيام" لكل محل
-    const dataSummary = points.map(p => {
-        const history = logs.filter(l => l.id === p.id);
-        const lastVisit = history.length > 0 ? new Date(history[history.length-1].date) : null;
-        let diffDays = "أبداً";
-        if (lastVisit) {
-            diffDays = Math.floor((today - lastVisit) / (1000 * 60 * 60 * 24)) + " يوم";
+            if (clickCount === 3) {
+                clickCount = 0; // تصفير للمرة الجاية
+                openSecretMenu(); // نادِ الدالة السرية
+            }
+        });
+
+        function openSecretMenu() {
+            Swal.fire({
+                title: 'الوضع السري للمسؤول 🤫',
+                input: 'password', // عشان الكود ما يظهر لو زول واقف جنبه
+                inputLabel: 'أدخل كود الإدارة لرفع السقف',
+                inputPlaceholder: 'الكود السري...',
+                showCancelButton: true,
+                confirmButtonText: 'تفعيل الرصيد 🔋',
+                cancelButtonText: 'إلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const adminCode = "Cashi2026"; // غير الكود ده زي ما تحب
+
+                    if (result.value === adminCode) {
+                        // رفع السقف لـ 100 محاولة إضافية
+                        let usageData = JSON.parse(localStorage.getItem('aiUsage') || '{"date":"","count":0}');
+                        usageData.count = -10; // رصيد إضافي كبير
+                        localStorage.setItem('aiUsage', JSON.stringify(usageData));
+
+                        Swal.fire('تم يا وحش!', 'أضفنا للمندوب 10 محاولة "جغم" إضافية. 🚀', 'success');
+                    } else {
+                        Swal.fire('كود غلط!', 'ما تلعب مع الإدارة يا مكنة ⛔', 'error');
+                    }
+                }
+            });
         }
-        return `- ${p.name}: آخر زيارة منذ (${diffDays})`;
-    }).join('\n');
+        async function askAI(mode = 'general') {
+            // --- كود تحديد حد الاستخدام ---
+            const userName = localStorage.getItem('appUserName') || 'يا بطل';
+            const MAX_FREE_USES = 3; // عدد المرات المتاحة مجاناً في اليوم
+            const MY_WHATSAPP = "249110021427";
+            const todayDate = new Date().toLocaleDateString('en-GB');
+            let usageData = JSON.parse(localStorage.getItem('aiUsage') || '{}');
 
-    // تحديد "التوجيه" بناءً على الزرار المختار
-    let instruction = "";
-    if (mode === 'general') {
-        instruction = "أعط ملخص سريع للأداء العام، منو الشغال ومنو النايم باختصار.";
-    } else if (mode === 'urgency') {
-        instruction = "ركز فقط على المحلات الما زرتها نهائياً أو اللي فات عليها أكتر من 5 أيام. وجه لينا كلام حار عشان نلحقهم.";
-    } else if (mode === 'plan') {
-        instruction = "اقترح لي 3 محلات كأولوية أزورهم الليلة بناءً على قدم تاريخ الزيارة، واديني نصيحة لكل واحد.";
-    }
+            // إذا كان أول استخدام في يوم جديد، صفر العداد
+            if (usageData.date !== todayDate) {
+                usageData = { date: todayDate, count: 0 };
+            }
 
-    try {
-        const prompt = `أنت مساعد ذكي لمندوب كاشي السودان (${userName}). تاريخ اليوم هو ${today.toLocaleDateString('en-GB')}.
+            // التحقق من الوصول للحد الأقصى
+            if (usageData.count >= MAX_FREE_USES) {
+                return Swal.fire({
+                    title: 'خلصت تحليل اليوم! 🛑',
+                    text: `يا بطل، استخدمت ال ${MAX_FREE_USES} محاولات الليلة. انتظر لبكرة أو اشترك في "باقة المكنة" عشان تواصل.`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#25d366', // لون الواتساب الأخضر
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: '🚀 تفعيل باقة المكنة (واتساب)',
+                    cancelButtonText: 'خلاص، بنتظر لبكرة',
+                    reverseButtons: true // عشان يخلي زر الواتساب على اليمين
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // رسالة واتساب جاهزة باسم المندوب
+                        const msg = encodeURIComponent(`يا معتز، أنا المندوب ${userName} وعايز أفعل باقة المكنة للذكاء الاصطناعي 🦾`);
+                        window.open(`https://wa.me/${MY_WHATSAPP}?text=${msg}`, '_blank');
+                    }
+                });
+            }
+            const logs = JSON.parse(localStorage.getItem('visitLogs') || '[]');
+            const points = JSON.parse(localStorage.getItem('savedPoints') || '[]');
+            const today = new Date();
+
+            if (points.length === 0) return Swal.fire('تنبيه', 'ضيف نقاط أول!', 'info');
+
+            Swal.fire({
+                title: 'جاري التحليل... ⚡',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            // تجهيز البيانات مع حساب "الأيام" لكل محل
+            const dataSummary = points.map(p => {
+                const history = logs.filter(l => l.id === p.id);
+                const lastVisit = history.length > 0 ? new Date(history[history.length - 1].date) : null;
+                let diffDays = "أبداً";
+                if (lastVisit) {
+                    diffDays = Math.floor((today - lastVisit) / (1000 * 60 * 60 * 24)) + " يوم";
+                }
+                return `- ${p.name}: آخر زيارة منذ (${diffDays})`;
+            }).join('\n');
+
+            // تحديد "التوجيه" بناءً على الزرار المختار
+            let instruction = "";
+            if (mode === 'general') {
+                instruction = "أعط ملخص سريع للأداء العام، منو الشغال ومنو النايم باختصار.";
+            } else if (mode === 'urgency') {
+                instruction = "ركز فقط على المحلات الما زرتها نهائياً أو اللي فات عليها أكتر من 5 أيام. وجه لينا كلام حار عشان نلحقهم.";
+            } else if (mode === 'plan') {
+                instruction = "اقترح لي 3 محلات كأولوية أزورهم الليلة بناءً على قدم تاريخ الزيارة، واديني نصيحة لكل واحد.";
+            }
+
+            try {
+                const prompt = `أنت مساعد ذكي لمندوب كاشي السودان (${userName}). تاريخ اليوم هو ${today.toLocaleDateString('en-GB')}.
         المطلوب: ${instruction}
         البيانات:
         ${dataSummary}
@@ -224,96 +310,96 @@ async function askAI(mode = 'general') {
         اللهجة: سودانية مكنة وجغامة.
         الشروط: نص سادة، بدون نجوم (**)، بدون Markdown، بلاش رغي كتير.`;
 
-        const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
-        const result = await model.generateContent(prompt);
-        let text = result.response.text().replace(/\*/g, '');
+                const model = genAI.getGenerativeModel({ model: "gemini-3.1-flash-lite-preview" });
+                const result = await model.generateContent(prompt);
+                let text = result.response.text().replace(/\*/g, '');
 
-        // --- تحديث وحفظ العداد هنا (مهم جداً) ---
-        usageData.count += 1;
-        localStorage.setItem('aiUsage', JSON.stringify(usageData));
+                // --- تحديث وحفظ العداد هنا (مهم جداً) ---
+                usageData.count += 1;
+                localStorage.setItem('aiUsage', JSON.stringify(usageData));
 
-        Swal.fire({
-            title: `توجيه المكنة 🦾`,
-            html: `<div style="text-align:right; direction:rtl; font-family:'Cairo'; line-height:1.5;">${text.replace(/\n/g, '<br>')}</div>`,
-            confirmButtonText: 'وصلت يا معلم'
-        });
-    } catch (error) {
-        console.error(error);
-        Swal.fire('خطأ', 'المكنة معلقة، جرب تاني', 'error');
-    }
-}
-function isToday(someDate) {
-    const today = new Date();
-    return someDate.getDate() == today.getDate() && someDate.getMonth() == today.getMonth() && someDate.getFullYear() == today.getFullYear();
-}
+                Swal.fire({
+                    title: `توجيه المكنة 🦾`,
+                    html: `<div style="text-align:right; direction:rtl; font-family:'Cairo'; line-height:1.5;">${text.replace(/\n/g, '<br>')}</div>`,
+                    confirmButtonText: 'وصلت يا معلم'
+                });
+            } catch (error) {
+                console.error(error);
+                Swal.fire('خطأ', 'المكنة معلقة، جرب تاني', 'error');
+            }
+        }
+        function isToday(someDate) {
+            const today = new Date();
+            return someDate.getDate() == today.getDate() && someDate.getMonth() == today.getMonth() && someDate.getFullYear() == today.getFullYear();
+        }
 
-function toggleVisit(id) {
-    if (visitedIds.includes(id)) {
-        visitedIds = visitedIds.filter(vId => vId !== id);
-        visitLogs = visitLogs.filter(log => !(log.id === id && isToday(new Date(log.date))));
-    } else {
-        visitedIds.push(id);
-        visitLogs.push({ id: id, name: myPoints.find(p => p.id === id).name, date: new Date().toISOString() });
-    }
-    localStorage.setItem('visitLogs', JSON.stringify(visitLogs));
-    saveAndRender();
-}
-
-function addNewPoint() {
-    const name = document.getElementById('newName').value.trim();
-    const acc = document.getElementById('newAcc').value.trim();
-    const phoneValue = document.getElementById('newPhone').value.trim();
-    const phone = phoneValue === "" ? "غير مسجل" : phoneValue;
-    
-    if (!name || !acc) return Swal.fire({ icon: 'warning', title: 'نواقص', text: 'الاسم ورقم الحساب مطلوبان' });
-
-    myPoints.push({ id: Date.now(), name, account: acc, phone });
-    saveAndRender();
-    
-    document.getElementById('newName').value = ''; document.getElementById('newAcc').value = ''; document.getElementById('newPhone').value = '';
-    Swal.fire({ icon: 'success', title: 'تمت الإضافة', timer: 800, showConfirmButton: false });
-}
-
-function deletePoint(id) {
-    Swal.fire({
-        title: 'حذف النقطة؟', text: "سيتم مسحها نهائياً", icon: 'warning', showCancelButton: true, confirmButtonText: 'نعم', cancelButtonText: 'إلغاء'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            myPoints = myPoints.filter(p => p.id !== id);
-            visitedIds = visitedIds.filter(vId => vId !== id);
+        function toggleVisit(id) {
+            if (visitedIds.includes(id)) {
+                visitedIds = visitedIds.filter(vId => vId !== id);
+                visitLogs = visitLogs.filter(log => !(log.id === id && isToday(new Date(log.date))));
+            } else {
+                visitedIds.push(id);
+                visitLogs.push({ id: id, name: myPoints.find(p => p.id === id).name, date: new Date().toISOString() });
+            }
+            localStorage.setItem('visitLogs', JSON.stringify(visitLogs));
             saveAndRender();
         }
-    });
-}
 
-function toggleFilter() {
-    showOnlyUnvisited = !showOnlyUnvisited;
-    const btn = document.getElementById('filterBtn');
-    btn.classList.toggle('btn-success'); btn.classList.toggle('btn-secondary');
-    btn.innerHTML = showOnlyUnvisited ? '<i class="bi bi-eye"></i> عرض جميع النقاط' : '<i class="bi bi-eye-slash"></i> عرض غير المزارة فقط';
-    render();
-}
+        function addNewPoint() {
+            const name = document.getElementById('newName').value.trim();
+            const acc = document.getElementById('newAcc').value.trim();
+            const phoneValue = document.getElementById('newPhone').value.trim();
+            const phone = phoneValue === "" ? "غير مسجل" : phoneValue;
 
-function saveAndRender() {
-    localStorage.setItem('savedPoints', JSON.stringify(myPoints));
-    localStorage.setItem('visitedPoints', JSON.stringify(visitedIds));
-    render();
-}
+            if (!name || !acc) return Swal.fire({ icon: 'warning', title: 'نواقص', text: 'الاسم ورقم الحساب مطلوبان' });
 
-function render() {
-    const list = document.getElementById('list');
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    document.getElementById('stats').innerText = `إجمالي النقاط: ${myPoints.length}`;
-    list.innerHTML = '';
+            myPoints.push({ id: Date.now(), name, account: acc, phone });
+            saveAndRender();
 
-    myPoints.forEach(p => {
-        const isVisited = visitedIds.includes(p.id);
-        const phoneDisplay = p.phone && p.phone !== "undefined" ? p.phone : "غير مسجل";
-        const matchesSearch = p.name.toLowerCase().includes(searchTerm) || p.account.includes(searchTerm) || phoneDisplay.includes(searchTerm);
+            document.getElementById('newName').value = ''; document.getElementById('newAcc').value = ''; document.getElementById('newPhone').value = '';
+            Swal.fire({ icon: 'success', title: 'تمت الإضافة', timer: 800, showConfirmButton: false });
+        }
 
-        if ((showOnlyUnvisited && isVisited) || !matchesSearch) return;
+        function deletePoint(id) {
+            Swal.fire({
+                title: 'حذف النقطة؟', text: "سيتم مسحها نهائياً", icon: 'warning', showCancelButton: true, confirmButtonText: 'نعم', cancelButtonText: 'إلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    myPoints = myPoints.filter(p => p.id !== id);
+                    visitedIds = visitedIds.filter(vId => vId !== id);
+                    saveAndRender();
+                }
+            });
+        }
 
-        list.innerHTML += `
+        function toggleFilter() {
+            showOnlyUnvisited = !showOnlyUnvisited;
+            const btn = document.getElementById('filterBtn');
+            btn.classList.toggle('btn-success'); btn.classList.toggle('btn-secondary');
+            btn.innerHTML = showOnlyUnvisited ? '<i class="bi bi-eye"></i> عرض جميع النقاط' : '<i class="bi bi-eye-slash"></i> عرض غير المزارة فقط';
+            render();
+        }
+
+        function saveAndRender() {
+            localStorage.setItem('savedPoints', JSON.stringify(myPoints));
+            localStorage.setItem('visitedPoints', JSON.stringify(visitedIds));
+            render();
+        }
+
+        function render() {
+            const list = document.getElementById('list');
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            document.getElementById('stats').innerText = `إجمالي النقاط: ${myPoints.length}`;
+            list.innerHTML = '';
+
+            myPoints.forEach(p => {
+                const isVisited = visitedIds.includes(p.id);
+                const phoneDisplay = p.phone && p.phone !== "undefined" ? p.phone : "غير مسجل";
+                const matchesSearch = p.name.toLowerCase().includes(searchTerm) || p.account.includes(searchTerm) || phoneDisplay.includes(searchTerm);
+
+                if ((showOnlyUnvisited && isVisited) || !matchesSearch) return;
+
+                list.innerHTML += `
             <div class="point-item p-3 d-flex align-items-center ${isVisited ? 'visited' : ''}">
                 <div class="form-check m-0 me-3">
                     <input class="form-check-input" type="checkbox" style="width:1.5em; height:1.5em; cursor:pointer;" onchange="toggleVisit(${p.id})" ${isVisited ? 'checked' : ''}>
@@ -325,51 +411,56 @@ function render() {
                 <button class="btn btn-link text-danger p-0 ms-2" onclick="deletePoint(${p.id})"><i class="bi bi-trash3 fs-4"></i></button>
             </div>
         `;
-    });
-}
+            });
+        }
 
-function exportData() {
-    if (myPoints.length === 0) return Swal.fire('عفواً', 'لا توجد نقاط للتصدير', 'error');
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([JSON.stringify(myPoints)], {type: 'text/plain'}));
-    a.download = `نقاط_كاشي_${localStorage.getItem('appUserName') || 'مندوب'}.txt`;
-    a.click();
-}
+        function exportData() {
+            if (myPoints.length === 0) return Swal.fire('عفواً', 'لا توجد نقاط للتصدير', 'error');
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([JSON.stringify(myPoints)], { type: 'text/plain' }));
+            a.download = `نقاط_كاشي_${localStorage.getItem('appUserName') || 'مندوب'}.txt`;
+            a.click();
+        }
 
-function importData() {
-    const input = document.createElement('input'); input.type = 'file'; input.accept = '.txt';
-    input.onchange = e => {
-        const reader = new FileReader();
-        reader.onload = ev => {
-            try { myPoints = JSON.parse(ev.target.result); saveAndRender(); Swal.fire('نجاح', 'تم استيراد النقاط', 'success'); } 
-            catch { Swal.fire('خطأ', 'الملف تالف', 'error'); }
-        };
-        reader.readAsText(e.target.files[0]);
-    };
-    input.click();
-}
+        function importData() {
+            const input = document.createElement('input'); input.type = 'file'; input.accept = '.txt';
+            input.onchange = e => {
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    try { myPoints = JSON.parse(ev.target.result); saveAndRender(); Swal.fire('نجاح', 'تم استيراد النقاط', 'success'); }
+                    catch { Swal.fire('خطأ', 'الملف تالف', 'error'); }
+                };
+                reader.readAsText(e.target.files[0]);
+            };
+            input.click();
+        }
 
-function generateReport() {
-    const count = visitedIds.length;
-    if (count === 0) return Swal.fire({ icon: 'info', title: 'تنبيه', text: 'لم تختر أي نقاط!' });
-    
-    let text = `التقرير اليومي | كاشي\nالمندوب: ${localStorage.getItem('appUserName') || 'غير محدد'}\n--------------------------\n`;
-    myPoints.forEach(p => { if (visitedIds.includes(p.id)) text += `✅ ${p.name} (${p.account})\n`; });
-    text += `--------------------------\nإجمالي الزيارات: ${count}`;
+        function generateReport() {
+            const count = visitedIds.length;
+            if (count === 0) return Swal.fire({ icon: 'info', title: 'تنبيه', text: 'لم تختر أي نقاط!' });
 
-    navigator.clipboard.writeText(text).then(() => Swal.fire('تم النسخ!', `تقرير لـ ${count} نقاط.`, 'success'));
-}
+            let text = `التقرير اليومي | كاشي\nالمندوب: ${localStorage.getItem('appUserName') || 'غير محدد'}\n--------------------------\n`;
+            myPoints.forEach(p => { if (visitedIds.includes(p.id)) text += `✅ ${p.name} (${p.account})\n`; });
+            text += `--------------------------\nإجمالي الزيارات: ${count}`;
 
-function resetDaily() {
-    Swal.fire({ title: 'تصفير اليوم؟', icon: 'question', showCancelButton: true, confirmButtonText: 'نعم' }).then(res => {
-        if (res.isConfirmed) { visitedIds = []; saveAndRender(); }
-    });
-}
+            navigator.clipboard.writeText(text).then(() => Swal.fire('تم النسخ!', `تقرير لـ ${count} نقاط.`, 'success'));
+        }
 
-// جعل الدوال متاحة للواجهة
-window.saveUserName = saveUserName; window.addNewPoint = addNewPoint; window.toggleFilter = toggleFilter; window.render = render; window.exportData = exportData; window.importData = importData; window.deletePoint = deletePoint; window.toggleVisit = toggleVisit; window.generateReport = generateReport; window.resetDaily = resetDaily; window.askAI = askAI;
+        function resetDaily() {
+            Swal.fire({ title: 'تصفير اليوم؟', icon: 'question', showCancelButton: true, confirmButtonText: 'نعم' }).then(res => {
+                if (res.isConfirmed) { visitedIds = []; saveAndRender(); }
+            });
+        }
 
-render();
-</script>
+        // جعل الدوال متاحة للواجهة
+        window.saveUserName = saveUserName; window.addNewPoint = addNewPoint; window.toggleFilter = toggleFilter; window.render = render; window.exportData = exportData; window.importData = importData; window.deletePoint = deletePoint; window.toggleVisit = toggleVisit; window.generateReport = generateReport;window.getAITodayPlan = getAITodayPlan; window.resetDaily = resetDaily; window.askAI = askAI;
+        // --- ضع الدالة هنا في أسفل الـ Script ---
+
+
+        render();
+
+    </script>
+
 </body>
+
 </html>

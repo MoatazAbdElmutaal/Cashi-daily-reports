@@ -439,9 +439,28 @@
             const count = visitedIds.length;
             if (count === 0) return Swal.fire({ icon: 'info', title: 'تنبيه', text: 'لم تختر أي نقاط!' });
 
-            let text = `التقرير اليومي | كاشي\nالمندوب: ${localStorage.getItem('appUserName') || 'غير محدد'}\n--------------------------\n`;
-            myPoints.forEach(p => { if (visitedIds.includes(p.id)) text += `✅ ${p.name} (${p.account})\n`; });
-            text += `--------------------------\nإجمالي الزيارات: ${count}`;
+            // 1. تجهيز اليوم والتاريخ
+const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+const today  = new Date();
+const dateString = today.toLocaleDateString('ar-EG', options); // بيطلع مثلاً: السبت، 4 أبريل 2026
+
+// 2. بناء نص التقرير المعدل
+let text = `التقرير اليومي | كاشي 🚀\n`;
+text += `التاريخ: ${dateString}\n`;
+text += `المندوب: ${localStorage.getItem('appUserName') || 'غير محدد'}\n`;
+text += `--------------------------\n`;
+
+myPoints.forEach(p => { 
+    if (visitedIds.includes(p.id)) {
+        // إضافة رقم الهاتف والحساب لكل نقطة
+        const phone = p.phone && p.phone !== "undefined" ? p.phone : "غير مسجل";
+        text += `✅ ${p.name}\n   (حساب: ${p.account} | هاتف: ${phone})\n`; 
+    } 
+});
+
+text += `--------------------------\n`;
+text += `إجمالي الزيارات: ${count}`;
+            
 
             navigator.clipboard.writeText(text).then(() => Swal.fire('تم النسخ!', `تقرير لـ ${count} نقاط.`, 'success'));
         }

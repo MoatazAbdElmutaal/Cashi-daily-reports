@@ -454,7 +454,7 @@ myPoints.forEach(p => {
     if (visitedIds.includes(p.id)) {
         // إضافة رقم الهاتف والحساب لكل نقطة
         const phone = p.phone && p.phone !== "undefined" ? p.phone : "غير مسجل";
-        text += `✅ ${p.name}\n   (حساب: ${p.account} | هاتف: ${phone})\n`; 
+        text += `${p.name}\n   (حساب: ${p.account} | هاتف: ${phone})\n`; 
     } 
 });
 
